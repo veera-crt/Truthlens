@@ -126,8 +126,8 @@ def auth_verify_face():
         # formula: sqrt(sum((x - y)^2 for x, y in zip(master, live)))
         distance = math.sqrt(sum((x - y)**2 for x, y in zip(master_desc, live_desc)))
         
-        # 0.6 is the standard threshold for face-api.js descriptors
-        if distance < 0.6:
+        # 0.65 is a more reliable threshold for varies lighting conditions
+        if distance < 0.65:
             session["logged_in"] = True
             session.pop("phase1_verified", None)
             return jsonify({
