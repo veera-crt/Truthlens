@@ -32,7 +32,6 @@ CORS(app, resources={r"/api/*": {
 
 # The specific Google Sheet Document ID
 SHEET_ID = os.environ.get("SHEET_ID")
-KEYFILE = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
 # Authentication Helper
 def is_logged_in():
@@ -92,15 +91,18 @@ def auth_verify_face():
         return jsonify({"error": "No biometric data transmitted."}), 400
         
     try:
-        # Load the Master Profile from the vault
-        vault_path = os.path.join(os.path.dirname(__file__), ".bioshield_vault.json")
-        if not os.path.exists(vault_path):
-            return jsonify({"error": "No face registered. Bio-Shield Locked."}), 404
+        # Load the Master Profile: Prefer .env, fallback to vault file
+        master_desc_raw = os.environ.get("ADMIN_BIO_DESCRIPTOR")
+        if master_desc_raw:
+            master_desc = json.loads(master_desc_raw)
+        else:
+            vault_path = os.path.join(os.path.dirname(__file__), ".bioshield_vault.json")
+            if not os.path.exists(vault_path):
+                return jsonify({"error": "No face registered. Bio-Shield Locked."}), 404
+            with open(vault_path, "r") as f:
+                vault = json.load(f)
+                master_desc = vault['descriptor']
             
-        with open(vault_path, "r") as f:
-            vault = json.load(f)
-            
-        master_desc = vault['descriptor']
         live_desc = data['descriptor']
         
         # Pure Python Euclidean Distance Comparison
@@ -155,7 +157,9 @@ def auth_register_biometrics():
 
 @app.route("/api/auth/check-registration", methods=["GET"])
 def auth_check_registration():
-    """Check if a biometric profile already exists in the vault."""
+    """Check if a biometric profile already exists in the vault or .env."""
+    if os.environ.get("ADMIN_BIO_DESCRIPTOR"):
+        return jsonify({"registered": True})
     vault_path = os.path.join(os.path.dirname(__file__), ".bioshield_vault.json")
     return jsonify({"registered": os.path.exists(vault_path)})
 
@@ -182,12 +186,19 @@ CACHE_TTL = 30 # Seconds to keep data safe in memory before a fresh fetch
 
 def get_sheet(worksheet_name=None):
     """Authenticate and return the targeted Google Sheet."""
-    if not KEYFILE or not os.path.exists(KEYFILE):
-        return None
     if not SHEET_ID:
         return None
+        
     try:
-        creds = ServiceAccountCredentials.from_json_keyfile_name(KEYFILE, SCOPE)
+        # Load from .env JSON string
+        gcp_json = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON")
+        if not gcp_json:
+            print("[!] Bio-Shield Error: GOOGLE_SERVICE_ACCOUNT_JSON missing from .env")
+            return None
+            
+        creds_info = json.loads(gcp_json)
+        creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_info, SCOPE)
+            
         client = gspread.authorize(creds)
         spreadsheet = client.open_by_key(SHEET_ID)
         
