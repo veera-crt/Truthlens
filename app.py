@@ -21,14 +21,27 @@ load_dotenv()
 # India Standard Time setup
 IST = pytz.timezone('Asia/Kolkata')
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "fallback-secret")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+app.secret_key = os.environ.get("SECRET_KEY", "TRUTHLENS-BIO-SHIELD-X92-2026")
+
+# Essential Session Security for Cross-Origin (Render Frontend -> Render Backend)
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_HTTPONLY=True,
+    PERMANENT_SESSION_LIFETIME=900 # 15 Minutes
+)
+
 # Enable CORS globally with explicit origins and methods to satisfy browser preflight checks
 CORS(app, resources={r"/api/*": {
     "origins": [
         "http://127.0.0.1:5500", 
         "http://localhost:5500", 
-        "https://truthlens-1-bp8s.onrender.com"
+        "https://truthlens-1-bp8s.onrender.com",
+        "https://truthlens-vyp1.onrender.com"
     ],
     "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     "allow_headers": ["Content-Type", "Authorization"]
