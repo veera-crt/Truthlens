@@ -1,0 +1,26 @@
+# Security & Vaults
+.env
+.bioshield_vault.json
+.bioshield_registered
+# Exclude JSON key files (like jarvis-*.json)
+*.json
+!package.json
+!package-lock.json
+
+# Logs & Cache
+logs
+*.log
+npm-debug.log*
+__pycache__/
+venv/
+.npm_cache/
+
+# Editor & OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Build artifacts
+node_modules/
+dist/
+dist-ssr/
