@@ -168,7 +168,17 @@ def auth_register_biometrics():
         
         session["logged_in"] = True
         session.pop("phase1_verified", None)
-        return jsonify({"status": "success", "message": "Biometric Identity Archived. Safe Folder Locked."})
+        
+        # LOGGING FOR PERSISTENCE: Print to Render logs so the user can save to .env
+        print(f"\n[BIO-VAULT-EXPORT] Copy this to your Render 'ADMIN_BIO_DESCRIPTOR' env variable:")
+        print(json.dumps(data['descriptor']))
+        print("-" * 50 + "\n")
+        
+        return jsonify({
+            "status": "success", 
+            "message": "Biometric Identity Archived.",
+            "vault_descriptor": data['descriptor'] # Also returned so you can see it in Browser Inspect -> Network
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
