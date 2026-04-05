@@ -14,7 +14,9 @@ async function apiCall(endpoint, options = {}) {
   // Normalize endpoint to full URL if needed
   // On Vercel, we use relative paths. Locally, we might use the specific port.
   const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
-  const baseUrl = isLocal ? 'https://truthlens-vyp1.onrender.com' : '';
+  const baseUrl = isLocal 
+    ? 'http://127.0.0.1:5001'   // Your local Flask port
+    : 'https://truthlens-vyp1.onrender.com';
   
   let url = endpoint;
   if (!endpoint.startsWith('http')) {
