@@ -570,7 +570,7 @@ def manual_ai_generate():
         return jsonify({"status": "success", "data": data})
     return jsonify({"error": "AI could not generate content. Check logs."}), 500
 
-@app.route("/api/autopilot/trigger", methods=["POST"])
+@app.route("/api/autopilot/trigger", methods=["GET", "POST"])
 def manual_trigger():
     """Force an autopilot run immediately."""
     autopilot_job()

@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "truthlens-fullstack",
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "."
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/app.py"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/autopilot/trigger",
+      "schedule": "0 * * * *"
+    }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.10"
+  }
+}

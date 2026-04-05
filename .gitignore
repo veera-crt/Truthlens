@@ -2,11 +2,6 @@
 .env
 .bioshield_vault.json
 .bioshield_registered
-# Exclude JSON key files (like jarvis-*.json)
-*.json
-!package.json
-!package-lock.json
-
 # Logs & Cache
 logs
 *.log
@@ -14,6 +9,16 @@ npm-debug.log*
 __pycache__/
 venv/
 .npm_cache/
+.vercel
+dist/
+dist-ssr/
+node_modules/
+
+# Config Files
+*.json
+!package.json
+!package-lock.json
+!vercel.json
 
 # Editor & OS files
 .vscode/

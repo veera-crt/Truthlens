@@ -12,7 +12,10 @@ import {
  */
 async function apiCall(endpoint, options = {}) {
   // Normalize endpoint to full URL if needed
-  const baseUrl = 'http://127.0.0.1:5001';
+  // On Vercel, we use relative paths. Locally, we might use the specific port.
+  const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+  const baseUrl = isLocal ? 'http://127.0.0.1:5001' : '';
+  
   let url = endpoint;
   if (!endpoint.startsWith('http')) {
     url = `${baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
