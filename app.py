@@ -32,7 +32,7 @@ app.config.update(
     SESSION_COOKIE_SECURE=True,
     SESSION_COOKIE_SAMESITE='None',
     SESSION_COOKIE_HTTPONLY=True,
-    PERMANENT_SESSION_LIFETIME=900 # 15 Minutes
+    PERMANENT_SESSION_LIFETIME=240 # 4 Minutes
 )
 
 # Enable CORS globally with explicit origins and methods to satisfy browser preflight checks

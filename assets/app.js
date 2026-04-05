@@ -29,6 +29,42 @@ async function apiCall(endpoint, options = {}) {
 }
 
 /**
+ * High-Security Idle Timeout Monitor
+ * Automatically logs out the user after 4 minutes of inactivity in the admin panel.
+ */
+let idleTimer = null;
+const IDLE_LIMIT = 4 * 60 * 1000; // 4 Minutes
+
+function resetIdleTimer() {
+  if (idleTimer) clearTimeout(idleTimer);
+  
+  // Only track idle time if we are on the admin route
+  const isDocAdmin = window.location.pathname.startsWith('/admin') || 
+                     document.documentElement.dataset.routePath === '/admin/';
+                     
+  if (isDocAdmin) {
+    idleTimer = setTimeout(async () => {
+      console.warn("[!] BIO-SHIELD: Idle Timeout Engaged. Terminating Session.");
+      try {
+        await apiCall('/api/auth/logout', { method: 'POST' });
+      } catch (e) {
+        console.error("Logout failed:", e);
+      }
+      window.location.reload(); // Reload to trigger logout check/redirect
+    }, IDLE_LIMIT);
+  }
+}
+
+// Global activity listeners
+['mousemove', 'keydown', 'mousedown', 'scroll', 'touchstart'].forEach(event => {
+  window.addEventListener(event, resetIdleTimer, { passive: true });
+});
+
+// Initialize timer on load
+resetIdleTimer();
+
+
+/**
  * High-Security Biometric Handlers (face-api.js integration)
  */
 let webcamStream = null;
