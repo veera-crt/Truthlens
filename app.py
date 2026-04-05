@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "fallback-secret")
 # Enable CORS globally with explicit origins and methods to satisfy browser preflight checks
 CORS(app, resources={r"/api/*": {
-    "origins": ["http://127.0.0.1:5500", "http://localhost:5500"],
+    "origins": ["http://127.0.0.1:5500", "http://localhost:5500", "https://truthlens-1-bp8s.onrender.com/"],
     "methods": ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
     "allow_headers": ["Content-Type", "Authorization"]
 }}, supports_credentials=True)
