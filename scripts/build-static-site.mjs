@@ -47,6 +47,8 @@ function buildPage(route) {
       rel="stylesheet"
     />
     <link rel="stylesheet" href="${basePrefix}assets/styles.css" />
+    <!-- Bio-Shield Biometric Core: Face-API.js -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script type="module" src="${basePrefix}assets/app.js"></script>
   </head>
   <body>
